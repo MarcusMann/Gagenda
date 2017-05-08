@@ -118,3 +118,23 @@ func GetAllContacts() (contacts []string) {
 
 	return
 }
+
+// RenameContacts renomeia o contato
+func RenameContacts() {
+	questoes := [2]string{"nome atual: ", "novo nome: "}
+	var decisao []string
+
+	input := bufio.NewScanner(os.Stdin)
+
+	for i := 0; i < len(questoes); i++ {
+		fmt.Println(questoes[i])
+		input.Scan()
+		decisao = append(decisao, input.Text())
+	}
+
+	rename := os.Rename("contacts/"+decisao[0]+".txt", "contacts/"+decisao[1]+".txt")
+
+	if rename != nil {
+		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", rename)
+	}
+}
