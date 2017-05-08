@@ -1,11 +1,9 @@
 package main
 
 import (
-	_ "exercicios/climenu/files"
-
 	"os"
 
-	"exercicios/climenu/files"
+	"exercicios/gagenda/files"
 
 	"github.com/paulrademacher/climenu"
 )
