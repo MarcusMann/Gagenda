@@ -14,6 +14,7 @@ func main() {
 	menu.AddMenuItem("Mostrar um Contato", "unico")
 	menu.AddMenuItem("Mostrar todos os contatos", "todos")
 	menu.AddMenuItem("Renomeiar contato", "renomeiar")
+	menu.AddMenuItem("Deletar contato", "deletar")
 
 	action, scaped := menu.Run()
 	if scaped {
@@ -29,5 +30,7 @@ func main() {
 		files.ShowAllContacts()
 	case "renomeiar":
 		files.RenameContacts()
+	case "deletar":
+		files.DeleteContacts()
 	}
 }

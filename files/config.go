@@ -138,3 +138,16 @@ func RenameContacts() {
 		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", rename)
 	}
 }
+
+// DeleteContacts deleta um contato
+func DeleteContacts() {
+	fmt.Println("Digite o nome do contato que você gostaria de deletar: ")
+	input := bufio.NewScanner(os.Stdin)
+
+	delete := os.Remove("contacts/" + input.Text() + ".txt")
+
+	if delete != nil {
+		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", delete)
+	}
+
+}
