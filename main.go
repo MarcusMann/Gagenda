@@ -13,7 +13,7 @@ func main() {
 	menu.AddMenuItem("Cadastrar um Contato", "cadastrar")
 	menu.AddMenuItem("Mostrar um Contato", "unico")
 	menu.AddMenuItem("Mostrar todos os contatos", "todos")
-	menu.AddMenuItem("Renomeia contato", "renomeia")
+	menu.AddMenuItem("Renomeiar contato", "renomeiar")
 
 	action, scaped := menu.Run()
 	if scaped {
@@ -27,7 +27,7 @@ func main() {
 		files.ShowUniqueContact()
 	case "todos":
 		files.ShowAllContacts()
-	case "renomeia":
+	case "renomeiar":
 		files.RenameContacts()
 	}
 }
