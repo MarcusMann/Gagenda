@@ -1,7 +1,7 @@
 package main
 
 import (
-	"exercicios/gagenda/files"
+	"exercicios/gagenda/config"
 
 	_ "github.com/paulrademacher/climenu"
 )
@@ -29,5 +29,5 @@ func main() {
 	// case "deletar":
 	// 	files.DeleteContacts()
 	// }
-	files.EncontrarContatos("")
+	config.CreateContact()
 }
