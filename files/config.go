@@ -5,49 +5,44 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"strings"
+
+	"github.com/apcera/termtables"
 
 	"bufio"
 )
 
-// // Tabelas ...
-// table := termtables.CreateTable()
-// table.AddHeaders("Nome", "Telefone")
-// table.AddRow(contact[0], contact[1])
-
-// fmt.Println(table.Render())
-
-// Contains verifica se uma string ta dentro de um []string
-func Contains(contact string, s []string) bool {
-	for _, contacts := range s {
-		if contacts == contact {
-			return true
-		}
-	}
-	return false
-}
-
-// FindContacts acha todos os contatos ou apenas um contato
-func FindContacts(nome string) {
+// EncontrarContatos procura por contatos
+func EncontrarContatos(nome string) {
+	// abre o arquivo de contatos
 	listaContatos, err := ioutil.ReadFile("contacts/contatos.txt")
-
-	// verifica se há algum erro ao tentar usar a expressão regular
-	errMessage(err)
+	errMessage(err) // verifica se há algum erro ao tentar usar a expressão regular
 
 	// expressão regular que verifica se o contato existe e pega eles.
-	procuraContato, err := regexp.Compile("(?P<name>" + nome + ").+")
+	re := regexp.MustCompile("(?P<name>" + nome + ").+")
 
-	// verifica se há algum erro ao tentar usar a expressão regular
-	errMessage(err)
+	// Se for != "" retorna pelo contato procurado mas se for == "" retorna todos os contatos.
+	procura := re.FindAllString(string(listaContatos), -1)
 
-	f := string(listaContatos)
+	var contatos []string // cria um slice de contatos para armazenar cada contato
 
-	fmt.Println(procuraContato.FindString(f))
+	// Cria uma tabela.
+	table := termtables.CreateTable()
+	// Define os th (headers) da tabela
+	table.AddHeaders("Nome", "Telefone")
 
+	for _, cadaContato := range procura {
+		contatos = strings.Split(cadaContato, "  ") // faz um split nas strings, separando cada linha por dois espaços e atribuindo a um slice.
+		// adiciona as linhas da tabela, tr
+		table.AddRow(contatos[0], contatos[1])
+	}
+
+	fmt.Println(table.Render())
 }
 
 // CreateContact cria o arquivo para cada contato
 func CreateContact() {
-	questoes := []string{"Digite seu nome: ", "Digite o seu número: "}
+	questoes := []string{"Digite um nome: ", "Digite um número: "}
 	input := bufio.NewScanner(os.Stdin)
 	var data []string
 
@@ -58,11 +53,9 @@ func CreateContact() {
 		data = append(data, input.Text())
 	}
 
-	f, err := os.Create("contacts/" + data[0] + ".txt")
+	f, err := os.Create("contacts/pessoas.txt")
 
-	if err != nil {
-		panic(err)
-	}
+	errMessage(err)
 
 	// fecha o documento depois que a função terminar
 	defer f.Close()
