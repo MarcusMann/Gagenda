@@ -12,6 +12,22 @@ import (
 	"bufio"
 )
 
+// Perguntas cria perguntas e retorna as respostas das perguntas que foram criadas
+// Perguntas são passadas como argumentos, separadas por ,
+func Perguntas(perguntas ...string) (respostas []string) {
+	input := bufio.NewScanner(os.Stdin)
+
+	for i := 0; i < len(perguntas); i++ {
+		fmt.Println(perguntas[i])
+
+		input.Scan()
+
+		respostas = append(respostas, input.Text())
+	}
+
+	return
+}
+
 // EncontrarContatos procura por contatos
 func EncontrarContatos(nome string) {
 	// abre o arquivo de contatos
@@ -68,36 +84,25 @@ func CreateContact() {
 	fmt.Println(f.Name() + " criado com sucesso!")
 }
 
-// RenameContacts renomeia o contato
-func RenameContacts() {
-	questoes := [2]string{"nome atual: ", "novo nome: "}
-	var decisao []string
+// RenomeiaContato renomeia o contato
+func RenomeiaContato() {
+	questoes := Perguntas("antigo nome: ", "novo nome: ")
 
-	input := bufio.NewScanner(os.Stdin)
+	renomeia := os.Rename("contacts/"+questoes[0]+".txt", "contacts/"+questoes[1]+".txt")
 
-	for i := 0; i < len(questoes); i++ {
-		fmt.Println(questoes[i])
-		input.Scan()
-		decisao = append(decisao, input.Text())
-	}
-
-	rename := os.Rename("contacts/"+decisao[0]+".txt", "contacts/"+decisao[1]+".txt")
-
-	if rename != nil {
-		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", rename)
+	if renomeia != nil {
+		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", renomeia)
 	}
 }
 
-// DeleteContacts deleta um contato
-func DeleteContacts() {
-	fmt.Println("Digite o nome do contato que você gostaria de deletar: ")
-	input := bufio.NewScanner(os.Stdin)
+// DeletaContato deleta um contato
+func DeletaContato() {
+	questoes := Perguntas("Digite o nome do contato que você gostaria de deletar: ")
 
-	delete := os.Remove("contacts/" + input.Text() + ".txt")
+	delete := os.Remove("contacts/" + questoes[0] + ".txt")
 
-	if delete != nil {
-		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", delete)
-	}
+	// trata o erro
+	errMessage(delete)
 
 }
 
