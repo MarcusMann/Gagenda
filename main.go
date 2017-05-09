@@ -25,9 +25,7 @@ func main() {
 	case "cadastrar":
 		files.CreateContact()
 	case "unico":
-		files.ShowUniqueContact()
-	case "todos":
-		files.ShowAllContacts()
+		files.FindContacts()
 	case "renomeiar":
 		files.RenameContacts()
 	case "deletar":

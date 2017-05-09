@@ -4,12 +4,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
+	"regexp"
 
 	"bufio"
-
-	"github.com/apcera/termtables"
 )
+
+// // Tabelas ...
+// table := termtables.CreateTable()
+// table.AddHeaders("Nome", "Telefone")
+// table.AddRow(contact[0], contact[1])
+
+// fmt.Println(table.Render())
 
 // Contains verifica se uma string ta dentro de um []string
 func Contains(contact string, s []string) bool {
@@ -19,6 +24,25 @@ func Contains(contact string, s []string) bool {
 		}
 	}
 	return false
+}
+
+// FindContacts acha todos os contatos ou apenas um contato
+func FindContacts(nome string) {
+	listaContatos, err := ioutil.ReadFile("contacts/contatos.txt")
+
+	// verifica se há algum erro ao tentar usar a expressão regular
+	errMessage(err)
+
+	// expressão regular que verifica se o contato existe e pega eles.
+	procuraContato, err := regexp.Compile("(?P<name>" + nome + ").+")
+
+	// verifica se há algum erro ao tentar usar a expressão regular
+	errMessage(err)
+
+	f := string(listaContatos)
+
+	fmt.Println(procuraContato.FindString(f))
+
 }
 
 // CreateContact cria o arquivo para cada contato
@@ -49,74 +73,6 @@ func CreateContact() {
 
 	// Caso não ocorra um erro, o arquivo irá salvar normalmente.
 	fmt.Println(f.Name() + " criado com sucesso!")
-}
-
-// ShowUniqueContact Ler cada contato separadamente
-func ShowUniqueContact() {
-	input := bufio.NewScanner(os.Stdin)
-	var nome string
-
-	for i := 0; i < 1; i++ {
-		fmt.Println("Digite o nome do contato: ")
-		input.Scan()
-		nome = input.Text()
-	}
-
-	f, err := ioutil.ReadFile("contacts/" + nome + ".txt")
-
-	// verifica se ao ler o arquivo resulta em algum erro
-	if err != nil {
-		panic(err)
-	}
-
-	// remove a tabulação + espaço em branco dentro do arquivo e armazena tudo que tem lá dentro da variável contato
-	contact := strings.Split(string(f), "\t")
-
-	// Tabelas ...
-	table := termtables.CreateTable()
-	table.AddHeaders("Nome", "Telefone")
-	table.AddRow(contact[0], contact[1])
-
-	fmt.Println(table.Render())
-}
-
-// ShowAllContacts Mostra todos os contatos
-func ShowAllContacts() {
-	var contact []string
-
-	// Tabelas ...
-	table := termtables.CreateTable()
-	table.AddHeaders("Nome", "Telefone")
-
-	for _, filenames := range GetAllContacts() {
-		f, err := ioutil.ReadFile("contacts/" + filenames)
-
-		if err != nil {
-			panic(err)
-		}
-
-		contact = strings.Split(string(f), "\t")
-		table.AddRow(contact[0], contact[1])
-
-	}
-
-	fmt.Println(table.Render())
-
-}
-
-// GetAllContacts Mostra todos os contatos
-func GetAllContacts() (contacts []string) {
-	f, err := ioutil.ReadDir("contacts/")
-
-	if err != nil {
-		panic(err)
-	}
-
-	for _, contact := range f {
-		contacts = append(contacts, contact.Name())
-	}
-
-	return
 }
 
 // RenameContacts renomeia o contato
@@ -150,4 +106,10 @@ func DeleteContacts() {
 		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", delete)
 	}
 
+}
+
+func errMessage(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
