@@ -33,36 +33,49 @@ func Perguntas(perguntas ...string) (respostas []string) {
 	return
 }
 
-// EncontrarContatos procura por contatos
-func EncontrarContatos(nome string) {
-	// abre o arquivo de contatos
-	listaContatos, err := ioutil.ReadFile(filename)
-	errMessage(err) // verifica se há algum erro ao tentar usar a expressão regular
-
+// Procura por contatos
+func procura(nome string, lista []byte) (contatos []string) {
 	// expressão regular que verifica se o contato existe e pega eles.
 	re := regexp.MustCompile("(?P<name>" + nome + ").+")
 
 	// Se for != "" retorna pelo contato procurado mas se for == "" retorna todos os contatos.
-	procura := re.FindAllString(string(listaContatos), -1)
+	contatos = re.FindAllString(string(lista), -1)
 
-	var contatos []string // cria um slice de contatos para armazenar cada contato
+	return
+}
+
+// EncontrarContatos procura por contatos
+func EncontrarContatos() {
+	// pergunta o nome do usuário
+	questoes := Perguntas("Digite um nome para encontrar um contato cadastrado, ou pressione enter para exibir todos os contatos")
+
+	// abre o arquivo de contatos
+	listaContatos, err := ioutil.ReadFile(filename)
+
+	// verifica se há algum erro ao tentar usar a expressão regular
+	errMessage(err)
+
+	// cria um slice de contatos para armazenar cada contato
+	var contatos []string
 
 	// Cria uma tabela.
 	table := termtables.CreateTable()
+
 	// Define os th (headers) da tabela
 	table.AddHeaders("Nome", "Telefone")
 
-	for _, cadaContato := range procura {
+	for _, cadaContato := range procura(questoes[0], listaContatos) {
 		contatos = strings.Split(cadaContato, "  ") // faz um split nas strings, separando cada linha por dois espaços e atribuindo a um slice.
 		// adiciona as linhas da tabela, tr
-		table.AddRow(contatos[0], contatos[1])
+		table.AddRow(strings.Title(contatos[0]), contatos[1])
 	}
 
+	// mostra a tabela redenrizada
 	fmt.Println(table.Render())
 }
 
-// CreateContact cria o arquivo para cada contato
-func CreateContact() {
+// CriarContato cria o arquivo para cada contato
+func CriarContato() {
 	questoes := Perguntas("Digite um nome: ", "Digite um número: ")
 
 	contatos, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
@@ -75,32 +88,11 @@ func CreateContact() {
 
 	// escreve dentro do arquivo
 	// Converte o número inteiro(idade) em string
-	if _, err := contatos.WriteString(questoes[0] + "  " + questoes[1] + "\n"); err != nil {
+	if _, err := contatos.WriteString(strings.ToLower(questoes[0]) + "  " + questoes[1] + "\n"); err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Contato : %s salvo com sucesso! \n", questoes[0])
-}
-
-// RenomeiaContato renomeia o contato
-func RenomeiaContato() {
-	questoes := Perguntas("antigo nome: ", "novo nome: ")
-
-	renomeia := os.Rename("contacts/"+questoes[0]+".txt", "contacts/"+questoes[1]+".txt")
-
-	if renomeia != nil {
-		fmt.Printf("Ocorreu um erro ao tentar renomear o contato, tente novamente! erro: %v", renomeia)
-	}
-}
-
-// DeletaContato deleta um contato
-func DeletaContato() {
-	questoes := Perguntas("Digite o nome do contato que você gostaria de deletar: ")
-
-	delete := os.Remove("contacts/" + questoes[0] + ".txt")
-
-	// trata o erro
-	errMessage(delete)
 }
 
 func errMessage(err error) {
