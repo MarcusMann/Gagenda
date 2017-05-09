@@ -12,6 +12,11 @@ import (
 	"bufio"
 )
 
+const (
+	// arquivo de contatos
+	filename = "contatos.txt"
+)
+
 // Perguntas cria perguntas e retorna as respostas das perguntas que foram criadas
 // Perguntas são passadas como argumentos, separadas por ,
 func Perguntas(perguntas ...string) (respostas []string) {
@@ -31,7 +36,7 @@ func Perguntas(perguntas ...string) (respostas []string) {
 // EncontrarContatos procura por contatos
 func EncontrarContatos(nome string) {
 	// abre o arquivo de contatos
-	listaContatos, err := ioutil.ReadFile("contacts/contatos.txt")
+	listaContatos, err := ioutil.ReadFile(filename)
 	errMessage(err) // verifica se há algum erro ao tentar usar a expressão regular
 
 	// expressão regular que verifica se o contato existe e pega eles.
@@ -58,30 +63,23 @@ func EncontrarContatos(nome string) {
 
 // CreateContact cria o arquivo para cada contato
 func CreateContact() {
-	questoes := []string{"Digite um nome: ", "Digite um número: "}
-	input := bufio.NewScanner(os.Stdin)
-	var data []string
+	questoes := Perguntas("Digite um nome: ", "Digite um número: ")
 
-	for i := 0; i < len(questoes); i++ {
-		fmt.Println(questoes[i])
-		input.Scan()
+	contatos, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
 
-		data = append(data, input.Text())
-	}
-
-	f, err := os.Create("contacts/pessoas.txt")
-
+	// trata o erro
 	errMessage(err)
 
 	// fecha o documento depois que a função terminar
-	defer f.Close()
+	defer contatos.Close()
 
 	// escreve dentro do arquivo
 	// Converte o número inteiro(idade) em string
-	f.WriteString(data[0] + "\t" + data[1])
+	if _, err := contatos.WriteString(questoes[0] + "  " + questoes[1] + "\n"); err != nil {
+		panic(err)
+	}
 
-	// Caso não ocorra um erro, o arquivo irá salvar normalmente.
-	fmt.Println(f.Name() + " criado com sucesso!")
+	fmt.Printf("Contato : %s salvo com sucesso! \n", questoes[0])
 }
 
 // RenomeiaContato renomeia o contato
@@ -103,7 +101,6 @@ func DeletaContato() {
 
 	// trata o erro
 	errMessage(delete)
-
 }
 
 func errMessage(err error) {
